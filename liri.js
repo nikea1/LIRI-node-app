@@ -13,26 +13,20 @@ var oAuth = {
 	access_token_secret: keys.access_token_secret
 }
 
-console.log(oAuth.consumer_key);
-console.log(oAuth.consumer_secret);
-console.log(oAuth.access_token_key);
-console.log(oAuth.access_token_secret);
-
 
 //get request functions
 var request = require("request");
 var spotifyWebApi = require("spotify-web-api-node");
 
 
-
 var command = process.argv[2];
-var search = process.argv[3];
+var search = process.argv;
 
 function run(command, search){
 	switch(command){
 		case "my-tweets":
 			//insert reponse logic here
-			//var twitter = new TwitterRequest(oAuth);
+		
 			var twitter = new TwitterTest(oAuth);
 
 			twitter.get("statuses/user_timeline",{count: 20}, function(error, tweets, response){
@@ -45,7 +39,7 @@ function run(command, search){
   					console.log(tweets[i].text);  // The favorites. 
   					console.log("---------------------------------------");
   				}
-  				//console.log(response);  // Raw response object. 
+  				
 
 			});
 
@@ -54,11 +48,14 @@ function run(command, search){
 			break;
 		case "spotify-this-song":
 
-			var song = search;
-			if(song == undefined) 
+			var song = ""
+			for (var i = 3; i < search.length; i++){
+				song += search[i]+" ";
+			}
+			song.trim();
+			if(song == "") 
 				song = "The Sign";
 			//insert reponse logic here
-			//console.log("im inside", command, "with", song);
 			var spotify = new spotifyWebApi();
 
 			spotify.searchTracks("track:"+song, { limit : 1, offset : 1 }).then(function(data){
@@ -78,12 +75,14 @@ function run(command, search){
 
 		case "movie-this":
 
-			var movie = search;
-			if(movie == undefined) 
+			var movie = "";
+			for (var i = 3; i < search.length; i++){
+				movie += search[i]+" ";
+			}
+			if(movie == "") 
 				movie = "Mr. Nobody";
 			
 			//insert reponse logic here
-			//console.log("im inside", command, "with", movie);
 			var queryUrl = 'http://www.omdbapi.com/?t=' + movie +'&y=&plot=short&tomatoes=true&r=json';
 			request(queryUrl, function(err, response, body){
 
